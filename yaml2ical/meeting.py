@@ -53,13 +53,12 @@ class Schedule(object):
 
         self.project = meeting.project
         self.filefrom = meeting.filefrom
-        # mandatory: time, day, irc, freq, recurrence
+        # mandatory: time, day, freq, recurrence
         try:
             self.utc = sched_yaml['time']
             self.time = datetime.datetime.strptime(sched_yaml['time'], '%H%M')
             # Sanitize the Day
-            self.day = sched_yaml['day'].lower().capitalize()
-            self.irc = sched_yaml['irc']
+            self.day = sched_yaml['day'].lower().capitalize() 
             self.freq = sched_yaml['frequency']
             self._recurrence = sched_yaml['frequency']
         except KeyError as e:
@@ -77,6 +76,9 @@ class Schedule(object):
             raise
 
         # optional: start_date defaults to the current date if not present
+        if 'location' in sched_yaml:
+            self.location = sched_yaml['location']
+
         if 'start_date' in sched_yaml:
             try:
                 self.start_date = datetime.datetime.strptime(
@@ -134,17 +136,14 @@ class Schedule(object):
             self.meeting_start = self.meeting_start - ONE_WEEK
             self.meeting_end = self.meeting_end - ONE_WEEK
 
-    def conflicts(self, other):
+    #def conflicts(self, other):
         """Checks for conflicting schedules."""
-        alternating = set(['biweekly-odd', 'biweekly-even'])
+        #alternating = set(['biweekly-odd', 'biweekly-even'])
         # NOTE(tonyb): .meeting_start also includes the day of the week. So no
         #              need to check .day explictly
-        return ((self.irc == other.irc) and
-                ((self.meeting_start < other.meeting_end) and
-                 (other.meeting_start < self.meeting_end)) and
-                (set([self.freq, other.freq]) != alternating))
-
-
+        #return (((self.meeting_start < other.meeting_end) and
+                # (other.meeting_start < self.meeting_end)) and
+                #(set([self.freq, other.freq]) != alternating))
 class Meeting(object):
     """An online meeting."""
 
@@ -154,7 +153,6 @@ class Meeting(object):
         yaml_obj = yaml.safe_load(data)
 
         try:
-            self.chair = yaml_obj['chair']
             self.description = yaml_obj['description']
             self.project = yaml_obj['project']
         except KeyError as e:
@@ -166,7 +164,7 @@ class Meeting(object):
         # want to have access to in their templates.
         self.extras = {}
         self.extras.update(yaml_obj)
-        for k in ['chair', 'description', 'project', 'schedule']:
+        for k in ['description', 'project', 'schedule']:
             if k in self.extras:
                 del self.extras[k]
 
@@ -227,25 +225,26 @@ def load_meetings(yaml_source):
         return meetings
 
 
-class MeetingConflictError(Exception):
-    pass
+# class MeetingConflictError(Exception):
+#     pass
 
 
-def check_for_meeting_conflicts(meetings):
-    """Check if a list of meetings have conflicts.
+# def check_for_meeting_conflicts(meetings):
+#     """Check if a list of meetings have conflicts.
 
-    :param meetings: list of Meeting objects
+#     :param meetings: list of Meeting objects
 
-    """
+#     """
 
-    for i in range(len(meetings)):
-        schedules = meetings[i].schedules
-        for j in range(i + 1, len(meetings)):
-            other_schedules = meetings[j].schedules
-            for schedule in schedules:
-                for other_schedule in other_schedules:
-                    if schedule.conflicts(other_schedule):
-                        msg_dict = {'one': schedule.filefrom,
-                                    'two': other_schedule.filefrom}
-                        raise MeetingConflictError(
-                            "Conflict between %(one)s and %(two)s" % msg_dict)
+#     for i in range(len(meetings)):
+#         schedules = meetings[i].schedules
+#         for j in range(i + 1, len(meetings)):
+#             other_schedules = meetings[j].schedules
+#             for schedule in schedules:
+#                 for other_schedule in other_schedules:
+#                     if schedule.conflicts(other_schedule):
+#                         msg_dict = {'one': schedule.filefrom,
+#                                     'two': other_schedule.filefrom}
+#                         raise MeetingConflictError(
+#                             "Conflict between %(one)s and %(two)s" % 
+#msg_dict)

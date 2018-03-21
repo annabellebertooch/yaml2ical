@@ -42,7 +42,28 @@ class WeeklyRecurrence(object):
 
     def __str__(self):
         return "Weekly"
+class FourWeekRecurrence(object):
+    """Meetings occuring every four weeks on ISO calendar.
+    """
+    def __init__(self):
+        pass
 
+    def next_occurence(self, current_date, day):
+        """Calculate the next every-four-weeks meeting.
+
+        :param current_date: the current date
+        :param day: scheduled day of the meeting
+        :returns: datetime object of next meeting
+        """
+        nextweek_day = WeeklyRecurrence().next_occurence(current_date, day)
+        nextweek_day.isocalendar()[1] + 4
+        return nextweek_day
+
+    def rrule(self):
+        return {'freq': 'weekly', 'interval': 4}
+
+    def __str__(self):
+        return "Every four weeks" % self.style
 
 class BiWeeklyRecurrence(object):
     """Meetings occuring on alternate weeks.
@@ -103,6 +124,7 @@ class AdhocRecurrence(object):
 
 supported_recurrences = {
     'weekly': WeeklyRecurrence(),
+    'every-four-weeks': FourWeekRecurrence(),
     'biweekly-odd': BiWeeklyRecurrence(style='odd'),
     'biweekly-even': BiWeeklyRecurrence(),
     'adhoc': AdhocRecurrence(),

@@ -114,7 +114,7 @@ def main():
 
     meetings = meeting.load_meetings(yaml_dir)
     # Check uniqueness and conflicts here before writing out to .ics
-    meeting.check_for_meeting_conflicts(meetings)
+    # meeting.check_for_meeting_conflicts(meetings)
 
     if args.ical_dir:
         ical_dir = _prepare_output(args.ical_dir, style='d', force=args.force)

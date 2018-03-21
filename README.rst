@@ -93,7 +93,7 @@ With each .ics file looking something similar to:
     SUMMARY:Barbican Meeting (openstack-meeting-alt)
     DTSTART;VALUE=DATE-TIME:20141006T200000Z
     DURATION:PT1H
-    DESCRIPTION:Project:  Barbican Meeting\nChair:  jraim\nIRC:  openstack-meet
+    DESCRIPTION:Project:  Barbican Meeting\nChair:  jraim\nLOCATION:  openstack-meet
      ing-alt\nAgenda:'* malini - update on Security Guide documentation\n\n  *
      alee_/atiwari - Crypto plugin changes\n\n  * arunkant - Target support in
      barbican policy enforcement\n\n  * jaraim - Support for debug mode start i
@@ -121,14 +121,13 @@ Each meeting consists of:
   * ``start_date``: the date the first meeting takes place on or after.
       Format `YYYYMMDD`, all values must be zero-padded.
   * ``day``: the day of week the meeting takes place [MANDATORY]
-  * ``irc``: the irc room in which the meeting is held [MANDATORY]
+  * ``location``: the location where the meeting is held [OPTIONAL]
   * ``frequency``: frequent occurrence of the meeting [MANDATORY]
   * ``skip_dates``: A set of dates that the meeting **DOES NOT** happen on
 
     * ``skip_date``: Skip the meeting for specified date.
       Format as ``start_date``
     * ``reason``: A comment for why the meeting was skipped
-* ``chair``: name of the meeting's chair [MANDATORY]
 * ``description``: a paragraph description about the meeting [MANDATORY]
 * ``agenda_url``: a link to the agenda page for the meeting
 * ``project_url``: a link to the project home page for the meeting
@@ -156,15 +155,17 @@ will be import into Python as a dictionary.
     project:  Nova Team Meeting
 
 * The schedule is a list of dictionaries each consisting of `time` in UTC,
-  `day` of the week, the `irc` meeting room, and the `frequency` of the
+  `day` of the week, the `location`, and the `frequency` of the
   meeting. Options for the `frequency` are `weekly`, `biweekly-even`,
-  `biweekly-odd`, and `adhoc` at the moment.
+  `biweekly-odd`, 'every-four-weeks' and `adhoc` at the moment.
 
   `biweekly-odd` are weeks where the ISO week number is an odd value.
   Correspondingly `biweekly-even` are weeks where the ISO week number is even.
   This unfortunately will break down on the transition from 2015 to 2016 as
   2015 has 53 ISO weeks (an odd value) and then the first week of 2016 is week
   1 (also an odd value).
+
+  'every-four-weeks' schedules the next meeting four ISO week numbers after the latest meeting.
 
   `adhoc` can be used to list the possibility of something in the schedule but
   will not actually generate any calendar events. This can be used for
@@ -175,19 +176,13 @@ will be import into Python as a dictionary.
     schedule:
         - time:       '1400'
           day:        Thursday
-          irc:        openstack-meeting-alt
+          location:   openstack-meeting-alt
           frequency:  biweekly-even
 
         - time:       '2100'
           day:        Thursday
-          irc:        openstack-meeting
+          location:   openstack-meeting
           frequency:  biweekly-odd
-
-* The chair is just a one liner.
-
-  ::
-
-    chair:  Russell Bryant
 
 * The project description is as follows.  Use `>` for paragraphs where new
   lines are folded, or `|` for paragraphs where new lines are preserved.
@@ -240,14 +235,13 @@ meeting should be ommited from the ical schedule
     project_url: https://wiki.openstack.org/wiki/Example
     agenda_url: https://wiki.openstack.org/wiki/Meetings/Example
     meeting_id: example
-    chair: A. Random Developer
     description:  >
         This meeting is a weekly gathering of developers working on Example
         project.
     schedule:
         - time:       '2100'
           day:        Monday
-          irc:        openstack-meeting
+          location:   openstack-meeting
           start_date: 20151001
           frequency:  weekly
           skip_dates:

@@ -55,14 +55,14 @@ class Yaml2IcalCalendar(icalendar.Calendar):
                 suffix = exdate.date_str
                 summary = 'CANCELLED: %s (%s)' % (summary, suffix)
             event.add('summary', summary)
-            event.add('location', '#' + sch.irc)
-
+            try:
+                event.add('location', sch.location)
+            except:
+                pass    
             # add ical description
             project_descript = "Project:  %s" % (meeting.project)
-            chair_descript = "Chair:  %s" % (meeting.chair)
             descript_descript = "Description:  %s" % (meeting.description)
             ical_descript = "\n".join((project_descript,
-                                       chair_descript,
                                        descript_descript))
             # Add URLs, if present, to the description
             if 'agenda_url' in meeting.extras:
